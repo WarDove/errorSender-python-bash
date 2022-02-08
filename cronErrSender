@@ -1,0 +1,1 @@
+0 9,12,15,18 * * * sh /home/terminal/atm/bin/errorSender/errSender

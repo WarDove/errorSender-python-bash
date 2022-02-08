@@ -1,0 +1,35 @@
+#!/bin/bash
+
+DATE=`date +%d%m%y`
+DATE1=`date +20%y-%m-%d -d yesterday`
+mkdir /home/terminal/atm/bin/errorSender/log
+
+KEY="/home/terminal/atm/keys/*"
+f="$(basename -- $KEY | cut -d'.' -f1)"
+f2="pay.log.$DATE1"
+echo "$f-$DATE" > /home/terminal/atm/bin/errorSender/pointId
+
+unzip  /home/terminal/atm/log/$f2.zip -d /home/terminal/atm/bin/errorSender/
+grep -an "Recorded false" /home/terminal/atm/bin/errorSender/$f2.txt > error_list
+grep -an "Error was occurred while writing data to card" /home/terminal/atm/bin/errorSender/$f2.txt >> error_list
+
+
+if [ -s error_list ] &&  [ ! -s log/log$DATE ]
+then
+echo ERROR string found... 
+e="$(grep -c "" error_list)"
+echo -e " \nERROR COUNT: $e in $DATE1" >> error_list
+cp /home/terminal/atm/log/$f2.zip paylog.zip
+zip -jr paylog.zip error_list
+echo LOG file zipped...
+python /home/terminal/atm/bin/errorSender/errSender.py
+echo "E-MAIL for $DATE1 sent..." | tee /home/terminal/atm/bin/errorSender/log/log$DATE
+fi
+
+f3="/home/terminal/atm/bin/errorSender/log/!(log$DATE)"
+shopt -s extglob
+rm $f3
+rm /home/terminal/atm/bin/errorSender/error_list
+rm /home/terminal/atm/bin/errorSender/paylog.zip
+rm /home/terminal/atm/bin/errorSender/pointId
+rm /home/terminal/atm/bin/errorSender/$f2.txt
