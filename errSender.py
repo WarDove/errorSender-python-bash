@@ -41,7 +41,7 @@ def gmailsender(toaddr, subject, message):
     server.quit()
 
 #e-mail variables
-toaddr = "izzat.mamayev@rabita.az"
+toaddr = "tarlan@huseynov.net"
 subject = pointname
 gmailsender(toaddr, subject, message)
 
